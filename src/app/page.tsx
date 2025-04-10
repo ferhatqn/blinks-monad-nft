@@ -18,7 +18,7 @@ const steps = [
       icon: "icon-cog",
     },
     headline: "Blink API",
-    text: "Blinks are headless APIs that return transactions, as well as educational metadata that can be used to render blink UIs. \n\nGet started by editing `/src/app/api/actions/mint/route.ts`",
+    text: "Blinks are headless APIs that return transactions, as well as educational metadata that can be used to render blink UIs. \n\nGet started by editing `/src/app/api/actions/mint-nft/route.ts`",
   },
   {
     icon: "icon-code",

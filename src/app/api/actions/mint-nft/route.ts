@@ -4,13 +4,12 @@ import { parseEther, encodeFunctionData, createPublicClient } from "viem";
 import { monad } from "@/monad";
 
 const blockchain = "eip155:10143";
-const nftContractAddress = "0xc5F588cB1fb042A0E0A152eEE7905dC3507B6D76"; // Input your NFT contract address
-const MINT_PRICE_ETH = "0.0069420"; // Price per NFT in MON
-
+const NFT_CONTRACT_ADDRESS = "YOUR_NFT_ADDRESS"; // Input your NFT contract address
+const MINT_PRICE_ETH = "YOUR_NFT_MINT_PRICE"; // Price per NFT in MON (adjust as configured by your smart contract)
 
 const client = createPublicClient({
   chain: monad,
-  transport: http(process.env.NEXT_PUBLIC_RPC_URL),
+  transport: http(process.env.MONAD_ENDPOINT_URL),
 });
 
 async function estimateGasFees() {
@@ -129,10 +128,10 @@ export const POST = async (req: Request) => {
     const gasEstimate = await estimateGasFees();
     
     const transaction = {
-      to: nftContractAddress,
+      to: NFT_CONTRACT_ADDRESS,
       data,
       value: weiValue.toString(),
-      chainId: "10143",
+      chainId: "10143", // Monad testnet
       type: "0x2",
       maxFeePerGas: gasEstimate.maxFeePerGas,
       maxPriorityFeePerGas: gasEstimate.maxPriorityFeePerGas,
