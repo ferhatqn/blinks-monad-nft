@@ -4,7 +4,9 @@ import { parseEther, encodeFunctionData, createPublicClient } from "viem";
 import { monad } from "@/monad";
 
 const blockchain = "eip155:10143";
-const nftContractAddress = "0x244FBFA8b2E02A0c5634d30Bb16E2d9B1B63Cb0d";
+const nftContractAddress = "0xc5F588cB1fb042A0E0A152eEE7905dC3507B6D76"; // Input your NFT contract address
+const MINT_PRICE_ETH = "0.0069420"; // Price per NFT in MON
+
 
 const client = createPublicClient({
   chain: monad,
@@ -26,9 +28,12 @@ async function estimateGasFees() {
 
 const nftAbi = [
   {
-    inputs: [{ internalType: "address", name: "to", type: "address" }],
+    inputs: [
+      { internalType: "address", name: "to", type: "address" }, 
+      { internalType: "uint256", name: "amount", type: "uint256" }
+    ],
     name: "safeMint",
-    outputs: [],
+    outputs: [{ internalType: "uint256[]", name: "", type: "uint256[]" }],
     stateMutability: "payable",
     type: "function",
   },
@@ -66,7 +71,7 @@ export const GET = async (req: Request) => {
           parameters: [
             {
               name: "amount",
-              label: `Enter MON amount`,
+              label: `Enter MON amount in wei`,
               type: "number",
             },
           ],
@@ -83,27 +88,42 @@ export const GET = async (req: Request) => {
 
 export const POST = async (req: Request) => {
   try {
-    // Get data from request
     const requestBody = await req.json();
     const userAddress = requestBody.account;
     
-    // Get amount from URL parameters
     const url = new URL(req.url);
-    const inputAmount = url.searchParams.get("amount");
+    const monAmount = url.searchParams.get("amount");
     
     if (!userAddress) {
       throw new Error("User address is required");
     }
     
-    if (!inputAmount) {
-      throw new Error("Amount is required");
+    if (!monAmount) {
+      throw new Error("MON amount is required");
     }
     
-    // Encode the function call for safeMint
+    const monValue = parseFloat(monAmount.replace(',', '.'));
+    
+    if (isNaN(monValue) || monValue <= 0) {
+      throw new Error(`Invalid MON amount: ${monAmount}`);
+    }
+    
+    const pricePerNFT = parseFloat(MINT_PRICE_ETH);
+    const numNFTs = Math.floor(monValue / pricePerNFT);
+    
+    if (numNFTs < 1) {
+      throw new Error(`Amount too small. Minimum is ${MINT_PRICE_ETH} MON for 1 NFT.`);
+    }
+    
+    const actualMonAmount = (numNFTs * pricePerNFT).toFixed(8);
+    console.log(`User entered ${monValue} MON, buying ${numNFTs} NFTs for ${actualMonAmount} MON`);
+    
+    const weiValue = parseEther(actualMonAmount);
+    
     const data = encodeFunctionData({
       abi: nftAbi,
       functionName: "safeMint",
-      args: [userAddress],
+      args: [userAddress, BigInt(numNFTs)],
     });
 
     const gasEstimate = await estimateGasFees();
@@ -111,7 +131,7 @@ export const POST = async (req: Request) => {
     const transaction = {
       to: nftContractAddress,
       data,
-      value: parseEther(inputAmount).toString(),
+      value: weiValue.toString(),
       chainId: "10143",
       type: "0x2",
       maxFeePerGas: gasEstimate.maxFeePerGas,
@@ -123,7 +143,7 @@ export const POST = async (req: Request) => {
     const response: ActionPostResponse = {
       type: "transaction",
       transaction: transactionJson,
-      message: "Your NFT is being minted!",
+      message: `Minting ${numNFTs} NFT${numNFTs > 1 ? 's' : ''} for ${actualMonAmount} MON!`,
     };
 
     return new Response(JSON.stringify(response), {
