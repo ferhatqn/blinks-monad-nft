@@ -1,17 +1,12 @@
 "use client";
-
 import {
   Blink,
   useBlink,
   useActionsRegistryInterval,
 } from "@dialectlabs/blinks";
-
 import "@dialectlabs/blinks/index.css";
-
 import { useEvmWagmiAdapter } from "@dialectlabs/blinks/hooks/evm";
-
 import { useModal } from "connectkit";
-
 import { StepCard } from "@/components/step-card";
 
 // Text for the steps on the left side of the page for the user to follow
@@ -23,7 +18,7 @@ const steps = [
       icon: "icon-cog",
     },
     headline: "Blink API",
-    text: "Blinks are headless APIs that return transactions, as well as educational metadata that can be used to render blink UIs. \n\nGet started by editing `/src/app/api/actions/tip-mon/route.ts`",
+    text: "Blinks are headless APIs that return transactions, as well as educational metadata that can be used to render blink UIs. \n\nGet started by editing `/src/app/api/actions/mint/route.ts`",
   },
   {
     icon: "icon-code",
@@ -52,7 +47,7 @@ export default function Home() {
 
   // Action we want to execute in the Blink
   const { blink, isLoading } = useBlink({
-    url: "evm-action:http://localhost:3000/api/actions/tip-mon",
+    url: "evm-action:http://localhost:3000/api/actions/mint-nft",
   });
 
   return (
