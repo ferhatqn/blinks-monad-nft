@@ -1,45 +1,73 @@
-# Blink Starter for Monad
+# Blinks NFT Minter for Monad
 
-A Next.js-based starter template demonstrating how to integrate [Blinks](https://docs.dialect.to/blinks/) with the Monad blockchain. This project showcases a simple donation application that allows users to send MON (Monad's native currency) to a specified wallet address.
+A Next.js-based starter template demonstrating how to create NFT Blinks on the Monad blockchain. This project showcases an NFT minting interface that allows users to mint NFTs with a simple, shareable link.
 
-![Blink Scaffold for Monad](/public/screenshot-blink-scaffold-monad.png)
+![Blink Interface](/public/nft-mint.png)
 
-## Guide 🔥🔥🔥
+## What are Blinks?
 
-Learn how to build this Blink from scratch with our extensive guide:
-https://docs.dialect.to/blinks/blinks-provider/guides/tip-blink
+Blinks (Blockchain Links) are shareable URLs that bundle on-chain actions into a single, clickable link. They eliminate the need for complex integrations, allowing developers to embed blockchain interactions anywhere URLs are supported.
 
 ## Prerequisites
 
-- Node.js 18+
-- npm, yarn, pnpm, or bun
-- A wallet with some MON tokens (for testing donations)
-
-## Environment Setup
-
-In the `.env` file, we have preset a `DONATION_WALLET` address as well as the public RPC endpoint for the Monad testnet.
-
-If you prefer to use your own wallet or RPC, please update the `.env` file accordingly.
-
-- `NEXT_PUBLIC_RPC_URL`: Monad RPC URL
-- `DONATION_WALLET`: The wallet address to receive donations
+- Node.js and Git installed
+- A wallet (MetaMask or WalletConnect compatible) with testnet MON tokens
+- An ERC-721 compatible NFT contract deployed on Monad testnet
+- QuickNode endpoint for Monad testnet 
 
 ## Getting Started
 
-1. Install dependencies:
+1. Clone the repository:
 
 ```bash
-npm install
+git clone https://github.com/quiknode-labs/qn-guide-examples.git
 ```
 
-2. Run the development server:
+2. Install dependencies:
+
+```bash
+cd ethereum/blink-starter-monad && npm install
+```
+
+3. Update the `.env` file with your QuickNode Monad testnet endpoint:
+
+```
+MONAD_ENDPOINT_URL=https://api.quicknode.com/YOUR-KEY
+```
+
+4. Update the contract address and mint price in `src/app/actions/mint-nft/route.ts`:
+
+```typescript
+const NFT_CONTRACT_ADDRESS = "YOUR_NFT_ADDRESS"; // Input your NFT contract address
+const MINT_PRICE_ETH = "YOUR_NFT_MINT_PRICE"; // Price per NFT in MON (adjust as configured by your smart contract)
+```
+
+5. Run the development server:
 
 ```bash
 npm run dev
 ```
 
-3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-## License
+![Blink NFT](./public/blinks-nft-1.png)
 
-MIT
+![Blink NFT](./public/blinks-nft-2.png)
+
+## Key Components
+
+- **GET Endpoint**: Defines the UI for the Blink (icon, title, description, available actions)
+- **POST Endpoint**: Contains the logic for transaction generation based on user input
+- **Gas Estimation**: Helper function to check network gas fees and recommend appropriate values
+- **NFT Contract Interface**: ABI definition for interacting with your NFT contract
+
+## Register Your Blink
+
+To make your Blink available to others, register it on [Dialect](https://terminal.dial.to/).
+
+## Additional Resources
+
+- [Monad Official Website](https://www.monad.xyz/)
+- [Blinks Documentation](https://docs.dialect.to/blinks/)
+- [QuickNode Multi-Chain Faucet](https://faucet.quicknode.com/drip)
+- [How to Create and Deploy an ERC-721 NFT](https://www.quicknode.com/guides/ethereum-development/nfts/how-to-create-and-deploy-an-erc-721-nft)
